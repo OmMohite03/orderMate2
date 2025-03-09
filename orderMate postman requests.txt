@@ -1,0 +1,180 @@
+
+## **📌 Users API**
+### **1️⃣ Create a User (POST /api/users/)**
+```json
+POST /api/users/
+Content-Type: application/json
+
+{
+  "username": "JohnDoe",
+  "email_address": "johndoe@example.com",
+  "phone_number": "1234567890",
+  "address": "123 Main Street"
+}
+```
+
+### **2️⃣ Get All Users (GET /api/users/)**
+```http
+GET /api/users/
+```
+
+### **3️⃣ Get a Specific User (GET /api/users/{user_id}/)**
+```http
+GET /api/users/1/
+```
+
+### **4️⃣ Update a User (PUT /api/users/{user_id}/)**
+```json
+PUT /api/users/1/
+Content-Type: application/json
+
+{
+  "username": "JohnDoeUpdated",
+  "email_address": "johnupdated@example.com",
+  "phone_number": "0987654321",
+  "address": "456 Updated Street"
+}
+```
+
+### **5️⃣ Delete a User (DELETE /api/users/{user_id}/)**
+```http
+DELETE /api/users/1/
+```
+
+---
+
+## **📌 Orders API**
+### **6️⃣ Create an Order (POST /api/orders/)**
+```json
+POST /api/orders/
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "order_datetime": "2025-02-17T14:30:00Z",
+  "model_no": "RTX-4090",
+  "qty": 2
+}
+```
+
+### **7️⃣ Get All Orders (GET /api/orders/)**
+```http
+GET /api/orders/
+```
+
+### **8️⃣ Get a Specific Order (GET /api/orders/{order_id}/)**
+```http
+GET /api/orders/1/
+```
+
+### **9️⃣ Update an Order (PUT /api/orders/{order_id}/)**
+```json
+PUT /api/orders/1/
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "order_datetime": "2025-02-17T15:00:00Z",
+  "model_no": "RTX-4080",
+  "qty": 3
+}
+```
+
+### **🔟 Delete an Order (DELETE /api/orders/{order_id}/)**
+```http
+DELETE /api/orders/1/
+```
+
+---
+
+## **📌 Dispatches API**
+### **1️⃣1️⃣ Create a Dispatch (POST /api/dispatches/)**
+```json
+POST /api/dispatches/
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "dispatch_person": "Mike",
+  "dispatch_datetime": "2025-02-18T10:00:00Z"
+}
+```
+
+### **1️⃣2️⃣ Get All Dispatches (GET /api/dispatches/)**
+```http
+GET /api/dispatches/
+```
+
+### **1️⃣3️⃣ Get a Specific Dispatch (GET /api/dispatches/{dispatch_id}/)**
+```http
+GET /api/dispatches/1/
+```
+
+### **1️⃣4️⃣ Update a Dispatch (PUT /api/dispatches/{dispatch_id}/)**
+```json
+PUT /api/dispatches/1/
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "dispatch_person": "John",
+  "dispatch_datetime": "2025-02-18T12:00:00Z"
+}
+```
+
+### **1️⃣5️⃣ Delete a Dispatch (DELETE /api/dispatches/{dispatch_id}/)**
+```http
+DELETE /api/dispatches/1/
+```
+
+---
+
+## **📌 Received Orders API**
+### **1️⃣6️⃣ Create a Received Order (POST /api/received/)**
+```json
+POST /api/received/
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "received_person": "Sarah",
+  "received_datetime": "2025-02-19T15:30:00Z"
+}
+```
+
+### **1️⃣7️⃣ Get All Received Orders (GET /api/received/)**
+```http
+GET /api/received/
+```
+
+### **1️⃣8️⃣ Get a Specific Received Order (GET /api/received/{received_id}/)**
+```http
+GET /api/received/1/
+```
+
+### **1️⃣9️⃣ Update a Received Order (PUT /api/received/{received_id}/)**
+```json
+PUT /api/received/1/
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "received_person": "Alice",
+  "received_datetime": "2025-02-19T18:00:00Z"
+}
+```
+
+### **2️⃣0️⃣ Delete a Received Order (DELETE /api/received/{received_id}/)**
+```http
+DELETE /api/received/1/
+```
+
+---
+
+## **📌 Summary API**
+### **2️⃣1️⃣ Get Monthly Summary (GET /api/summary/?month=YYYY-MM)**
+```http
+GET /api/summary/?month=2025-02
+```
+
+---

@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Summary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            populateMonthDropdown();
+            populateYearDropdown();
+        });
+        
+        // Store selected months/years
+        let selectedMonths = [];
+        let selectedYears = [];
+        
+        function populateMonthDropdown() {
+            const months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            let monthMenu = document.getElementById("monthDropdownMenu");
+            monthMenu.innerHTML = "";
+            
+            months.forEach((month, index) => {
+                let id = `month-${index + 1}`;
+                monthMenu.innerHTML += `
+                    <li>
+                        <input type="checkbox" id="${id}" value="${(index + 1).toString().padStart(2, '0')}" onclick="updateSelection('month', this)">
+                        <label for="${id}">${month}</label>
+                    </li>`;
+            });
+        }
+        
+        function populateYearDropdown() {
+            let yearMenu = document.getElementById("yearDropdownMenu");
+            let currentYear = new Date().getFullYear();
+            let earliestYear = 2020;
+            
+            yearMenu.innerHTML = "";
+            for (let year = earliestYear; year <= currentYear; year++) {
+                let id = `year-${year}`;
+                yearMenu.innerHTML += `
+                    <li>
+                        <input type="checkbox" id="${id}" value="${year}" onclick="updateSelection('year', this)">
+                        <label for="${id}">${year}</label>
+                    </li>`;
+            }
+        }
+        
+        function updateSelection(type, checkbox) {
+            let list = type === 'month' ? selectedMonths : selectedYears;
+            
+            if (checkbox.checked) {
+                list.push(checkbox.value);
+            } else {
+                list.splice(list.indexOf(checkbox.value), 1);
+            }
+        }
+        
+        function fetchSummary() {
+            let selectedMonths = Array.from(document.getElementById("monthDropdownMenu").querySelectorAll("input:checked"))
+                .map(cb => cb.value); // Get selected month numbers
+            let selectedYears = Array.from(document.getElementById("yearDropdownMenu").querySelectorAll("input:checked"))
+                .map(cb => cb.value); // Get selected years
+        
+            if (selectedMonths.length === 0 && selectedYears.length === 0) {
+                alert("Please select at least one month or one year.");
+                return;
+            }
+        
+            let queryParams = [];
+        
+            if (selectedMonths.length > 0 && selectedYears.length > 0) {
+                // Generate YYYY-MM format
+                let monthYearPairs = [];
+                selectedYears.forEach(year => {
+                    selectedMonths.forEach(month => {
+                        monthYearPairs.push(`${year}-${month}`);
+                    });
+                });
+                queryParams.push(`months=${monthYearPairs.join(",")}`);
+            } 
+            else if (selectedMonths.length > 0) {
+                queryParams.push(`month=${selectedMonths.join(",")}`);
+            }
+            else if (selectedYears.length > 0) {
+                queryParams.push(`year=${selectedYears.join(",")}`);
+            }
+        
+            let url = `/api/summary/?${queryParams.join("&")}`;
+        
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById("summaryTableBody");
+                    tableBody.innerHTML = "";
+        
+                    data.forEach(row => {
+                        let [month, orders, dispatches, received] = row;
+                        let newRow = `<tr>
+                            <td>${month}</td>
+                            <td>${orders}</td>
+                            <td>${dispatches}</td>
+                            <td>${received}</td>
+                        </tr>`;
+                        tableBody.innerHTML += newRow;
+                    });
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+
+        function clearFilters() {
+            // Clear selected filters
+            selectedMonths = [];
+            selectedYears = [];
+            document.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+            
+            // Clear the table
+            document.getElementById("summaryTableBody").innerHTML = "";
+        }
+        
+        </script>
+        
+    
+    
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Monthly Summary</h2>
+        
+        <div class="d-flex justify-content-center mb-3">
+            <!-- Month Dropdown -->
+            <div class="dropdown me-2">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select Month(s)
+                </button>
+                <ul class="dropdown-menu" id="monthDropdownMenu">
+                    <!-- Months will be added dynamically -->
+                </ul>
+            </div>
+        
+            <!-- Year Dropdown -->
+            <div class="dropdown me-2">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="yearDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select Year(s)
+                </button>
+                <ul class="dropdown-menu" id="yearDropdownMenu">
+                    <!-- Years will be added dynamically -->
+                </ul>
+            </div>
+        
+            <button class="btn btn-success me-2" onclick="fetchSummary()">Filter</button>
+            <button class="btn btn-warning" onclick="clearFilters()">Reset</button>
+        </div>
+        
+        
+        
+        <div class="table-responsive">
+            <table id="summaryTable" class="table table-bordered table-striped table-hover text-center" data-sorted="asc">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Month</th>
+                        <th>Orders</th>
+                        <th>Dispatches</th>
+                        <th>Received</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryTableBody">
+                    {% for month, stats in data.items %}
+                    <tr>
+                        <td>{{ month }}</td>
+                        <td>{{ stats.orders }}</td>
+                        <td>{{ stats.dispatches }}</td>
+                        <td>{{ stats.received }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
